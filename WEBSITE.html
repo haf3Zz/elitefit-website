@@ -1,0 +1,923 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Kero Fitness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-red': '#ff0000',
+                        'brand-black': '#111111',
+                    },
+                    fontFamily: {
+                        'montserrat': ['Montserrat', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+        }
+        .section {
+            min-height: 100vh;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
+        }
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s ease;
+        }
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s ease;
+        }
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .visible .slide-in-left,
+        .visible .slide-in-right,
+        .visible .fade-in {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .zoom-in {
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+        .visible .zoom-in {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .pricing-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+        .testimonial-container {
+            overflow: hidden;
+            position: relative;
+        }
+        .testimonial-slider {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        .testimonial {
+            min-width: 100%;
+        }
+        .before-after-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .before-after-slider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 50%;
+            overflow: hidden;
+        }
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #ff0000;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: ew-resize;
+        }
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ff0000;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: ew-resize;
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #ff0000;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .social-icon {
+            transition: transform 0.3s ease;
+        }
+        .social-icon:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body class="bg-brand-black text-white">
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-black bg-opacity-80 z-50 py-4 px-6 md:px-12">
+        <div class="flex justify-between items-center">
+            <div class="text-2xl font-bold text-brand-red">COACH KERO</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#transformations" class="nav-link">Transformations</a>
+                <a href="#testimonials" class="nav-link">Testimonials</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4">
+            <div class="flex flex-col space-y-4">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#transformations" class="nav-link">Transformations</a>
+                <a href="#testimonials" class="nav-link">Testimonials</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="section flex items-center justify-center relative min-h-screen bg-gradient-to-b from-brand-black to-gray-900 overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+                <defs>
+                    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                        <path d="M 50 0 L 0 0 0 50" fill="none" stroke="white" stroke-width="1" opacity="0.3"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+        </div>
+        <div class="container mx-auto px-6 md:px-12 z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0">
+                    <div class="slide-in-left">
+                        <h1 class="text-5xl md:text-7xl font-extrabold mb-4">COACH <span class="text-brand-red">KERO</span></h1>
+                        <p class="text-2xl md:text-3xl font-bold mb-8">TRANSFORM YOUR BODY. ELEVATE YOUR LIFE.</p>
+                        <p class="text-lg mb-8 text-gray-300">Personalized fitness coaching that delivers real results. No excuses, just progress.</p>
+                        <div class="flex space-x-4">
+                            <a href="#services" class="bg-brand-red hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
+                                Get Started
+                            </a>
+                            <a href="#contact" class="border-2 border-white hover:border-brand-red hover:text-brand-red text-white font-bold py-3 px-8 rounded-full transition duration-300">
+                                Contact Me
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="slide-in-right">
+                        <div class="relative w-full h-96 md:h-[500px]">
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="absolute inset-0 w-full h-full">
+                                <path fill="#FF0000" d="M47.7,-57.2C59.9,-45.8,67.2,-29.6,69.2,-13.1C71.2,3.4,68,20.2,59.5,33.1C51,46,37.2,55,21.7,61.5C6.2,68,-11,72,-27.4,68.5C-43.8,65,-59.4,54,-67.1,39C-74.8,24,-74.6,5,-69.8,-11.9C-65,-28.8,-55.6,-43.6,-42.7,-54.7C-29.8,-65.8,-13.4,-73.2,2,-75.5C17.5,-77.8,35.5,-68.7,47.7,-57.2Z" transform="translate(100 100)" />
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-48 h-48 text-white">
+                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#services" class="text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="section py-20 bg-gradient-to-b from-gray-900 to-brand-black">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">MY <span class="text-brand-red">SERVICES</span></h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">Personalized coaching programs designed to help you achieve your fitness goals, no matter your starting point.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-gray-800 rounded-xl p-8 shadow-lg fade-in">
+                    <div class="bg-brand-red rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Custom Workout Plans</h3>
+                    <p class="text-gray-300 mb-6">Tailored workout routines designed specifically for your body type, fitness level, and goals.</p>
+                    <ul class="mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Progressive overload training
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Home or gym options
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Video exercise tutorials
+                        </li>
+                    </ul>
+                    <a href="#pricing" class="inline-block text-brand-red font-bold hover:underline">Learn More →</a>
+                </div>
+                
+                <!-- Service 2 -->
+                <div class="bg-gray-800 rounded-xl p-8 shadow-lg fade-in" style="transition-delay: 0.2s;">
+                    <div class="bg-brand-red rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Nutrition Coaching</h3>
+                    <p class="text-gray-300 mb-6">Personalized meal plans and nutrition guidance to fuel your workouts and optimize results.</p>
+                    <ul class="mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Macro-balanced meal plans
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Grocery shopping guides
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Recipe suggestions
+                        </li>
+                    </ul>
+                    <a href="#pricing" class="inline-block text-brand-red font-bold hover:underline">Learn More →</a>
+                </div>
+                
+                <!-- Service 3 -->
+                <div class="bg-gray-800 rounded-xl p-8 shadow-lg fade-in" style="transition-delay: 0.4s;">
+                    <div class="bg-brand-red rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">1-on-1 Coaching</h3>
+                    <p class="text-gray-300 mb-6">Direct access to me for personalized guidance, accountability, and motivation.</p>
+                    <ul class="mb-6 space-y-2">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Weekly check-ins
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Form correction
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            24/7 WhatsApp support
+                        </li>
+                    </ul>
+                    <a href="#pricing" class="inline-block text-brand-red font-bold hover:underline">Learn More →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section py-20 bg-gradient-to-b from-brand-black to-gray-900">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">PRICING <span class="text-brand-red">PLANS</span></h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">Choose the coaching package that fits your needs and budget. All plans include personalized attention.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Silver Plan -->
+                <div class="pricing-card bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                    <div class="p-8">
+                        <div class="slide-in-left" style="transition-delay: 0.1s;">
+                            <h3 class="text-2xl font-bold mb-2">SILVER</h3>
+                            <div class="flex items-end mb-6">
+                                <span class="text-4xl font-bold">$99</span>
+                                <span class="text-gray-400 ml-2">/month</span>
+                            </div>
+                            <ul class="mb-8 space-y-3">
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Custom workout plan
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Basic nutrition guide
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Bi-weekly check-ins
+                                </li>
+                                <li class="flex items-center text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                    Video form analysis
+                                </li>
+                                <li class="flex items-center text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                    24/7 WhatsApp support
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="px-8 pb-8">
+                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full transition duration-300">
+                            JOIN NOW
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Gold Plan -->
+                <div class="pricing-card bg-brand-red rounded-xl overflow-hidden shadow-lg transform scale-105">
+                    <div class="absolute top-0 right-0 bg-white text-brand-red font-bold py-1 px-4 rounded-bl-lg">
+                        POPULAR
+                    </div>
+                    <div class="p-8">
+                        <div class="slide-in-left" style="transition-delay: 0.2s;">
+                            <h3 class="text-2xl font-bold mb-2">GOLD</h3>
+                            <div class="flex items-end mb-6">
+                                <span class="text-4xl font-bold">$149</span>
+                                <span class="text-gray-200 ml-2">/month</span>
+                            </div>
+                            <ul class="mb-8 space-y-3">
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Custom workout plan
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Detailed nutrition plan
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Weekly check-ins
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Video form analysis
+                                </li>
+                                <li class="flex items-center text-gray-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                    24/7 WhatsApp support
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="px-8 pb-8">
+                        <button class="w-full bg-black hover:bg-gray-900 text-white font-bold py-3 px-6 rounded-full transition duration-300">
+                            JOIN NOW
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Platinum Plan -->
+                <div class="pricing-card bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                    <div class="p-8">
+                        <div class="slide-in-left" style="transition-delay: 0.3s;">
+                            <h3 class="text-2xl font-bold mb-2">PLATINUM</h3>
+                            <div class="flex items-end mb-6">
+                                <span class="text-4xl font-bold">$249</span>
+                                <span class="text-gray-400 ml-2">/month</span>
+                            </div>
+                            <ul class="mb-8 space-y-3">
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Custom workout plan
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Personalized meal plans
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    2x weekly video calls
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Video form analysis
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-red mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    24/7 WhatsApp support
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="px-8 pb-8">
+                        <button class="w-full bg-brand-red hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full transition duration-300">
+                            JOIN NOW
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Transformations Section -->
+    <section id="transformations" class="section py-20 bg-gradient-to-b from-gray-900 to-brand-black">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">REAL <span class="text-brand-red">TRANSFORMATIONS</span></h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">See the incredible results my clients have achieved with dedication and my coaching.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Transformation 1 -->
+                <div class="zoom-in">
+                    <div class="before-after-container h-96 rounded-xl overflow-hidden relative">
+                        <!-- After Image (Full Width) -->
+                        <div class="absolute inset-0 bg-gray-800 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-32 h-32 text-brand-red">
+                                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Before Image (Slider) -->
+                        <div class="before-after-slider">
+                            <div class="absolute inset-0 bg-gray-600 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-32 h-32 text-gray-400">
+                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Slider Handle -->
+                        <div class="slider-handle">
+                            <div class="slider-button">
+                                <i class="fas fa-arrows-alt-h"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Labels -->
+                        <div class="absolute bottom-4 right-4 bg-brand-red text-white px-3 py-1 rounded-full text-sm font-bold">
+                            AFTER
+                        </div>
+                        <div class="absolute bottom-4 left-4 bg-gray-700 text-white px-3 py-1 rounded-full text-sm font-bold">
+                            BEFORE
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-xl font-bold">John D. - Lost 30kg in 6 months</h3>
+                        <p class="text-gray-300">"Coach Kero's program completely changed my life. The personalized approach made all the difference."</p>
+                    </div>
+                </div>
+                
+                <!-- Transformation 2 -->
+                <div class="zoom-in" style="transition-delay: 0.2s;">
+                    <div class="before-after-container h-96 rounded-xl overflow-hidden relative">
+                        <!-- After Image (Full Width) -->
+                        <div class="absolute inset-0 bg-gray-800 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-32 h-32 text-brand-red">
+                                <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Before Image (Slider) -->
+                        <div class="before-after-slider">
+                            <div class="absolute inset-0 bg-gray-600 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-32 h-32 text-gray-400">
+                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Slider Handle -->
+                        <div class="slider-handle">
+                            <div class="slider-button">
+                                <i class="fas fa-arrows-alt-h"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Labels -->
+                        <div class="absolute bottom-4 right-4 bg-brand-red text-white px-3 py-1 rounded-full text-sm font-bold">
+                            AFTER
+                        </div>
+                        <div class="absolute bottom-4 left-4 bg-gray-700 text-white px-3 py-1 rounded-full text-sm font-bold">
+                            BEFORE
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <h3 class="text-xl font-bold">Sarah M. - Gained 10kg of muscle</h3>
+                        <p class="text-gray-300">"I never thought I could transform my body like this. Coach Kero's nutrition plan was a game-changer."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="section py-20 bg-gradient-to-b from-brand-black to-gray-900">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">CLIENT <span class="text-brand-red">TESTIMONIALS</span></h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">Hear what my clients have to say about their journey with me.</p>
+            </div>
+            <div class="testimonial-container relative">
+                <div class="testimonial-slider">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial px-4">
+                        <div class="bg-gray-800 rounded-xl p-8 shadow-lg">
+                            <div class="flex items-center mb-6">
+                                <div class="w-16 h-16 rounded-full bg-brand-red flex items-center justify-center text-2xl font-bold mr-4">
+                                    AM
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold">Alex Morgan</h3>
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 mb-4">"I've tried many fitness programs before, but Coach Kero's approach is different. He doesn't just give you a workout plan; he teaches you how to make fitness a lifestyle. The results speak for themselves - I'm down 15kg and have never felt stronger!"</p>
+                            <p class="text-brand-red font-bold">Lost 15kg in 4 months</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial px-4">
+                        <div class="bg-gray-800 rounded-xl p-8 shadow-lg">
+                            <div class="flex items-center mb-6">
+                                <div class="w-16 h-16 rounded-full bg-brand-red flex items-center justify-center text-2xl font-bold mr-4">
+                                    JT
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold">James Thompson</h3>
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 mb-4">"Coach Kero's nutrition plan was exactly what I needed. I was skeptical at first, but following his advice helped me gain 8kg of lean muscle in just 3 months. His constant support and motivation kept me going even when I wanted to give up."</p>
+                            <p class="text-brand-red font-bold">Gained 8kg of muscle in 3 months</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial px-4">
+                        <div class="bg-gray-800 rounded-xl p-8 shadow-lg">
+                            <div class="flex items-center mb-6">
+                                <div class="w-16 h-16 rounded-full bg-brand-red flex items-center justify-center text-2xl font-bold mr-4">
+                                    LK
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold">Lisa Kim</h3>
+                                    <div class="flex text-yellow-400">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-300 mb-4">"As a busy mom of three, I never thought I'd have time for fitness. Coach Kero created a program that fits perfectly into my schedule. His workouts are efficient but effective. I've lost 20kg and have more energy than ever to keep up with my kids!"</p>
+                            <p class="text-brand-red font-bold">Lost 20kg in 6 months</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Arrows -->
+                <button id="prev-testimonial" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-brand-red hover:bg-red-700 text-white rounded-full w-12 h-12 flex items-center justify-center focus:outline-none">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button id="next-testimonial" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-brand-red hover:bg-red-700 text-white rounded-full w-12 h-12 flex items-center justify-center focus:outline-none">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Dots -->
+                <div class="flex justify-center mt-8 space-x-2">
+                    <button class="testimonial-dot w-3 h-3 rounded-full bg-brand-red" data-index="0"></button>
+                    <button class="testimonial-dot w-3 h-3 rounded-full bg-gray-500" data-index="1"></button>
+                    <button class="testimonial-dot w-3 h-3 rounded-full bg-gray-500" data-index="2"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section py-20 bg-gradient-to-b from-gray-900 to-black">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">GET IN <span class="text-brand-red">TOUCH</span></h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">Ready to start your fitness journey? Reach out to me today and let's discuss how I can help you achieve your goals.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="slide-in-left">
+                    <h3 class="text-3xl font-bold mb-6">Let's Connect</h3>
+                    <p class="text-gray-300 mb-8">I'm here to answer any questions you might have about my coaching services. Feel free to reach out through any of the channels below.</p>
+                    <div class="space-y-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-brand-red flex items-center justify-center mr-4">
+                                <i class="fab fa-whatsapp text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">WhatsApp</p>
+                                <a href="https://wa.me/201234567890" class="text-xl font-bold hover:text-brand-red transition duration-300">+20 123 456 7890</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-brand-red flex items-center justify-center mr-4">
+                                <i class="far fa-envelope text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Email</p>
+                                <a href="mailto:coach@kerofitness.com" class="text-xl font-bold hover:text-brand-red transition duration-300">coach@kerofitness.com</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-brand-red flex items-center justify-center mr-4">
+                                <i class="fas fa-map-marker-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Location</p>
+                                <p class="text-xl font-bold">Cairo, Egypt</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <h4 class="text-xl font-bold mb-4">Follow Me</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="social-icon w-12 h-12 rounded-full bg-gray-800 hover:bg-brand-red flex items-center justify-center transition duration-300">
+                                <i class="fab fa-instagram text-xl"></i>
+                            </a>
+                            <a href="#" class="social-icon w-12 h-12 rounded-full bg-gray-800 hover:bg-brand-red flex items-center justify-center transition duration-300">
+                                <i class="fab fa-youtube text-xl"></i>
+                            </a>
+                            <a href="#" class="social-icon w-12 h-12 rounded-full bg-gray-800 hover:bg-brand-red flex items-center justify-center transition duration-300">
+                                <i class="fab fa-facebook-f text-xl"></i>
+                            </a>
+                            <a href="#" class="social-icon w-12 h-12 rounded-full bg-gray-800 hover:bg-brand-red flex items-center justify-center transition duration-300">
+                                <i class="fab fa-tiktok text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-in-right">
+                    <div class="bg-gray-800 rounded-xl p-8 shadow-lg">
+                        <h3 class="text-2xl font-bold mb-6">Quick Contact</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-gray-300 mb-2">Name</label>
+                                <input type="text" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-red" placeholder="Your Name">
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 mb-2">Email</label>
+                                <input type="email" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-red" placeholder="Your Email">
+                            </div>
+                            <div>
+                                <label class="block text-gray-300 mb-2">Message</label>
+                                <textarea class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-red h-32" placeholder="Your Message"></textarea>
+                            </div>
+                            <div class="text-center">
+                                <button class="bg-brand-red hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full transition duration-300 transform hover:scale-105">
+                                    Send Message
+                                </button>
+                                <p class="text-gray-400 text-sm mt-2">This is a demo form. For actual inquiries, please use WhatsApp or email.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-8">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-2xl font-bold text-brand-red mb-4 md:mb-0">COACH KERO</div>
+                <div class="text-gray-400 text-center md:text-right">
+                    <p>&copy; 2023 Coach Kero Fitness. All rights reserved.</p>
+                    <p>Designed with <span class="text-brand-red">❤</span> for your fitness journey</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for animations
+        const sections = document.querySelectorAll('.section');
+        const options = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, options);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Testimonial slider
+        const testimonialSlider = document.querySelector('.testimonial-slider');
+        const testimonials = document.querySelectorAll('.testimonial');
+        const prevButton = document.getElementById('prev-testimonial');
+        const nextButton = document.getElementById('next-testimonial');
+        const dots = document.querySelectorAll('.testimonial-dot');
+        let currentIndex = 0;
+
+        function updateSlider() {
+            testimonialSlider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            dots.forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.remove('bg-gray-500');
+                    dot.classList.add('bg-brand-red');
+                } else {
+                    dot.classList.remove('bg-brand-red');
+                    dot.classList.add('bg-gray-500');
+                }
+            });
+        }
+
+        prevButton.addEventListener('click', () => {
+            currentIndex = (currentIndex === 0) ? testimonials.length - 1 : currentIndex - 1;
+            updateSlider();
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentIndex = (currentIndex === testimonials.length - 1) ? 0 : currentIndex + 1;
+            updateSlider();
+        });
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentIndex = index;
+                updateSlider();
+            });
+        });
+
+        // Auto-advance testimonials
+        setInterval(() => {
+            currentIndex = (currentIndex === testimonials.length - 1) ? 0 : currentIndex + 1;
+            updateSlider();
+        }, 5000);
+
+        // Before-After Slider
+        const beforeAfterContainers = document.querySelectorAll('.before-after-container');
+
+        beforeAfterContainers.forEach(container => {
+            const slider = container.querySelector('.before-after-slider');
+            const handle = container.querySelector('.slider-handle');
+            let isDragging = false;
+
+            function updateSliderPosition(x) {
+                const containerRect = container.getBoundingClientRect();
+                const percentage = Math.max(0, Math.min(100, ((x - containerRect.left) / containerRect.width) * 100));
+                
+                slider.style.width = `${percentage}%`;
+                handle.style.left = `${percentage}%`;
+            }
+
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                updateSliderPosition(e.clientX);
+            });
+
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                updateSliderPosition(e.touches[0].clientX);
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateSliderPosition(e.clientX);
+                }
+            });
+
+            window.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    updateSliderPosition(e.touches[0].clientX);
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            window.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        });
+
+        // Make first section visible immediately
+        document.querySelector('#home').classList.add('visible');
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'957eee61610a2770',t:'MTc1MTI5OTc5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
