@@ -3,76 +3,1150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OXAAM Bot Controller</title>
+    <title>ELITEFIT - Fitness Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: '#FFD700',
+                        darkBg: '#121212',
+                        darkCard: '#1E1E1E',
+                        darkInput: '#2A2A2A'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body { background-color: #2c3e50; color: #ecf0f1; font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        h1 { color: #3498db; margin-bottom: 20px; }
-        button { background-color: #2980b9; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 10px; }
-        button:hover { background-color: #3498db; }
-        .status { margin-top: 20px; font-size: 1.2em; color: #16a085; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+        }
+        .gold-glow:hover {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            transition: all 0.3s ease;
+        }
+        .set-row:not(:last-child) {
+            border-bottom: 1px solid #333;
+        }
+        .red-glow:hover {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
-<body>
-    <h1>OXAAM Bot Controller</h1>
-    <button id="startBtn">Start</button>
-    <button id="stopBtn">Stop</button>
-    <div class="status" id="status">Bot is idle...</div>
+<body class="bg-darkBg text-white min-h-screen">
+    <!-- Header -->
+    <header class="py-6 px-4 md:px-8 border-b border-gray-800">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-gold tracking-wider">ELITEFIT</h1>
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span id="activeClientDisplay" class="text-sm md:text-base">No client selected</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 md:px-8 py-8">
+        <!-- Client Profile Section -->
+        <section class="mb-10">
+            <div class="bg-darkCard rounded-xl p-6 shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Client Profile
+                </h2>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-grow">
+                        <label for="clientSelect" class="block text-sm font-medium text-gray-400 mb-1">Select Client</label>
+                        <select id="clientSelect" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                            <option value="">-- Select Client --</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <button id="newClientBtn" class="bg-darkInput hover:bg-gray-700 text-white py-2 px-4 rounded-lg gold-glow flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Create Profile
+                        </button>
+                        <button id="viewProfileBtn" class="bg-darkInput hover:bg-gray-700 text-white py-2 px-4 rounded-lg gold-glow flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            View Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exercise Logger Form -->
+        <section class="mb-10">
+            <div class="bg-darkCard rounded-xl p-6 shadow-lg">
+                <h2 class="text-xl font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    Log Exercise
+                </h2>
+                <form id="exerciseForm" class="space-y-4">
+                    <input type="hidden" id="exerciseId">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="exerciseName" class="block text-sm font-medium text-gray-400 mb-1">Exercise Name</label>
+                            <input type="text" id="exerciseName" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="e.g. Bench Press" required>
+                        </div>
+                        <div>
+                            <label for="exerciseDate" class="block text-sm font-medium text-gray-400 mb-1">Date</label>
+                            <input type="date" id="exerciseDate" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="splitName" class="block text-sm font-medium text-gray-400 mb-1">Split Name</label>
+                        <input type="text" id="splitName" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="e.g. PUSH, LEGS, Upper" required>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-medium text-gray-400">Sets</label>
+                            <button type="button" id="addSetBtn" class="text-gold hover:text-yellow-400 text-sm flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                Add Set
+                            </button>
+                        </div>
+                        <div class="bg-darkInput border border-gray-700 rounded-lg overflow-hidden">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-gray-700">
+                                        <th class="py-2 px-3 text-left">#</th>
+                                        <th class="py-2 px-3 text-left">Reps</th>
+                                        <th class="py-2 px-3 text-left">Weight</th>
+                                        <th class="py-2 px-3 text-left">Difficulty</th>
+                                        <th class="py-2 px-3 text-left"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="setsContainer">
+                                    <!-- Sets will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" id="saveExerciseBtn" class="bg-gold hover:bg-yellow-500 text-black font-medium py-2 px-6 rounded-lg gold-glow flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                            </svg>
+                            Save Exercise
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Workout History Section -->
+        <section>
+            <div class="bg-darkCard rounded-xl p-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Workout History
+                    </h2>
+                    <div class="flex space-x-2">
+                        <button id="eraseExerciseBtn" class="bg-red-600 hover:bg-red-700 text-white py-1.5 px-3 rounded-lg red-glow flex items-center text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Erase Selected
+                        </button>
+                        <button id="eraseSplitBtn" class="bg-red-600 hover:bg-red-700 text-white py-1.5 px-3 rounded-lg red-glow flex items-center text-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Erase Split
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filters -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label for="filterClient" class="block text-sm font-medium text-gray-400 mb-1">Filter by Client</label>
+                        <select id="filterClient" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                            <option value="">All Clients</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterSplit" class="block text-sm font-medium text-gray-400 mb-1">Filter by Split</label>
+                        <select id="filterSplit" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold">
+                            <option value="">All Splits</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Exercise Cards -->
+                <div id="exerciseCards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Exercise cards will be added here -->
+                </div>
+                
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden text-center py-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-400">No exercises found</h3>
+                    <p class="text-gray-500 mt-1">Start by creating a client profile and logging your first exercise.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for creating new client -->
+    <div id="newClientModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard rounded-xl p-6 shadow-2xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold mb-4 text-gold">Create New Client Profile</h3>
+            <form id="newClientForm" class="space-y-4">
+                <div>
+                    <label for="clientName" class="block text-sm font-medium text-gray-400 mb-1">Client Name</label>
+                    <input type="text" id="clientName" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Enter client name" required>
+                </div>
+                <div>
+                    <label for="clientAge" class="block text-sm font-medium text-gray-400 mb-1">Age</label>
+                    <input type="number" id="clientAge" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Enter age" min="1" max="120" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="clientHeight" class="block text-sm font-medium text-gray-400 mb-1">Height (cm)</label>
+                        <input type="number" id="clientHeight" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Height in cm" min="1" step="0.1" required>
+                    </div>
+                    <div>
+                        <label for="clientWeight" class="block text-sm font-medium text-gray-400 mb-1">Weight (kg)</label>
+                        <input type="number" id="clientWeight" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Weight in kg" min="1" step="0.1" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="clientTarget" class="block text-sm font-medium text-gray-400 mb-1">Fitness Target</label>
+                    <select id="clientTarget" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" required>
+                        <option value="">Select a target</option>
+                        <option value="Weight Loss">Weight Loss</option>
+                        <option value="Muscle Gain">Muscle Gain</option>
+                        <option value="Strength">Strength</option>
+                        <option value="Endurance">Endurance</option>
+                        <option value="General Fitness">General Fitness</option>
+                        <option value="Athletic Performance">Athletic Performance</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelClientBtn" class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg">Cancel</button>
+                    <button type="submit" class="bg-gold hover:bg-yellow-500 text-black font-medium py-2 px-4 rounded-lg gold-glow">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for viewing client profile -->
+    <div id="viewProfileModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard rounded-xl p-6 shadow-2xl max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gold">Client Profile</h3>
+                <button id="closeProfileBtn" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="profileContent" class="space-y-4">
+                <div class="flex justify-center mb-4">
+                    <div class="h-24 w-24 rounded-full bg-gold flex items-center justify-center text-3xl font-bold text-darkBg">
+                        <span id="profileInitials">JD</span>
+                    </div>
+                </div>
+                <div class="text-center mb-4">
+                    <h4 id="profileName" class="text-xl font-semibold">John Doe</h4>
+                    <p id="profileTarget" class="text-gold">Weight Loss</p>
+                </div>
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-darkInput rounded-lg p-3">
+                        <p class="text-gray-400 text-sm">Age</p>
+                        <p id="profileAge" class="text-lg font-medium">30</p>
+                    </div>
+                    <div class="bg-darkInput rounded-lg p-3">
+                        <p class="text-gray-400 text-sm">Height</p>
+                        <p id="profileHeight" class="text-lg font-medium">175 cm</p>
+                    </div>
+                    <div class="bg-darkInput rounded-lg p-3">
+                        <p class="text-gray-400 text-sm">Weight</p>
+                        <p id="profileWeight" class="text-lg font-medium">70 kg</p>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-gray-700">
+                    <h5 class="font-medium mb-2">Workout Summary</h5>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-darkInput rounded-lg p-3">
+                            <p class="text-gray-400 text-sm">Total Workouts</p>
+                            <p id="profileWorkouts" class="text-lg font-medium">12</p>
+                        </div>
+                        <div class="bg-darkInput rounded-lg p-3">
+                            <p class="text-gray-400 text-sm">Last Workout</p>
+                            <p id="profileLastWorkout" class="text-lg font-medium">2 days ago</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between pt-4">
+                    <button id="editProfileBtn" class="bg-darkInput hover:bg-gray-700 text-white py-2 px-4 rounded-lg gold-glow flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit Profile
+                    </button>
+                    <button id="deleteProfileBtn" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg red-glow flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Delete Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for erasing exercises -->
+    <div id="eraseExerciseModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard rounded-xl p-6 shadow-2xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold mb-4 text-red-500">Erase Exercises</h3>
+            <p class="mb-4">Select exercises to erase:</p>
+            <div id="exerciseCheckboxes" class="max-h-60 overflow-y-auto mb-4 space-y-2">
+                <!-- Exercise checkboxes will be added here -->
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" id="cancelEraseExerciseBtn" class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg">Cancel</button>
+                <button type="button" id="confirmEraseExerciseBtn" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg red-glow">Erase Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for erasing splits -->
+    <div id="eraseSplitModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard rounded-xl p-6 shadow-2xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold mb-4 text-red-500">Erase Split</h3>
+            <p class="mb-4">Select a split to erase all related exercises:</p>
+            <div class="mb-4">
+                <label for="eraseSplitSelect" class="block text-sm font-medium text-gray-400 mb-1">Split Name</label>
+                <select id="eraseSplitSelect" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <option value="">Select a split</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" id="cancelEraseSplitBtn" class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg">Cancel</button>
+                <button type="button" id="confirmEraseSplitBtn" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg red-glow">Erase Split</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing client profile -->
+    <div id="editProfileModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-darkCard rounded-xl p-6 shadow-2xl max-w-md w-full mx-4">
+            <h3 class="text-xl font-semibold mb-4 text-gold">Edit Client Profile</h3>
+            <form id="editClientForm" class="space-y-4">
+                <input type="hidden" id="editClientId">
+                <div>
+                    <label for="editClientName" class="block text-sm font-medium text-gray-400 mb-1">Client Name</label>
+                    <input type="text" id="editClientName" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Enter client name" required>
+                </div>
+                <div>
+                    <label for="editClientAge" class="block text-sm font-medium text-gray-400 mb-1">Age</label>
+                    <input type="number" id="editClientAge" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Enter age" min="1" max="120" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="editClientHeight" class="block text-sm font-medium text-gray-400 mb-1">Height (cm)</label>
+                        <input type="number" id="editClientHeight" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Height in cm" min="1" step="0.1" required>
+                    </div>
+                    <div>
+                        <label for="editClientWeight" class="block text-sm font-medium text-gray-400 mb-1">Weight (kg)</label>
+                        <input type="number" id="editClientWeight" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" placeholder="Weight in kg" min="1" step="0.1" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="editClientTarget" class="block text-sm font-medium text-gray-400 mb-1">Fitness Target</label>
+                    <select id="editClientTarget" class="w-full bg-darkInput border border-gray-700 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-gold" required>
+                        <option value="">Select a target</option>
+                        <option value="Weight Loss">Weight Loss</option>
+                        <option value="Muscle Gain">Muscle Gain</option>
+                        <option value="Strength">Strength</option>
+                        <option value="Endurance">Endurance</option>
+                        <option value="General Fitness">General Fitness</option>
+                        <option value="Athletic Performance">Athletic Performance</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelEditClientBtn" class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg">Cancel</button>
+                    <button type="submit" class="bg-gold hover:bg-yellow-500 text-black font-medium py-2 px-4 rounded-lg gold-glow">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
-        const targetURL = "https://www.oxaam.com/cgcode15.php";
-        const corsProxy = "https://corsproxy.io/?"; // Using CORS proxy
-        const botToken = "7828066806:AAEHS1aQeBYNg3XUlnltWXg3htIEyjGUvb8";
-        const chatId = "5060381701";  // Replace with your Telegram chat ID
-        const email = "oxaamgb4814@oxaam.com";
-        const password = "oxaam7418594";
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize date input with today's date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('exerciseDate').value = today;
+            
+            // Add first set row by default
+            addSetRow();
+            
+            // Load data from localStorage
+            loadClients();
+            loadExercises();
+            updateFilters();
+            
+            // Event Listeners
+            document.getElementById('newClientBtn').addEventListener('click', openNewClientModal);
+            document.getElementById('cancelClientBtn').addEventListener('click', closeNewClientModal);
+            document.getElementById('newClientForm').addEventListener('submit', createNewClient);
+            document.getElementById('addSetBtn').addEventListener('click', addSetRow);
+            document.getElementById('exerciseForm').addEventListener('submit', saveExercise);
+            document.getElementById('clientSelect').addEventListener('change', handleClientChange);
+            document.getElementById('filterClient').addEventListener('change', filterExercises);
+            document.getElementById('filterSplit').addEventListener('change', filterExercises);
+            document.getElementById('viewProfileBtn').addEventListener('click', openViewProfileModal);
+            document.getElementById('closeProfileBtn').addEventListener('click', closeViewProfileModal);
+            document.getElementById('editProfileBtn').addEventListener('click', openEditProfileModal);
+            document.getElementById('cancelEditClientBtn').addEventListener('click', closeEditProfileModal);
+            document.getElementById('editClientForm').addEventListener('submit', saveEditedClient);
+            document.getElementById('deleteProfileBtn').addEventListener('click', confirmDeleteProfile);
+            document.getElementById('eraseExerciseBtn').addEventListener('click', openEraseExerciseModal);
+            document.getElementById('cancelEraseExerciseBtn').addEventListener('click', closeEraseExerciseModal);
+            document.getElementById('confirmEraseExerciseBtn').addEventListener('click', eraseSelectedExercises);
+            document.getElementById('eraseSplitBtn').addEventListener('click', openEraseSplitModal);
+            document.getElementById('cancelEraseSplitBtn').addEventListener('click', closeEraseSplitModal);
+            document.getElementById('confirmEraseSplitBtn').addEventListener('click', eraseSelectedSplit);
+        });
 
-        let intervalId = null;
-
-        // Fetch verification code
-        async function fetchVerificationCode() {
-            try {
-                const response = await fetch(corsProxy + encodeURIComponent(targetURL));
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, "text/html");
-                const codeElement = doc.getElementById("totp-code");
-                return codeElement ? codeElement.textContent.trim() : "Code not found";
-            } catch (error) {
-                console.error("Error fetching code:", error);
-                return "Error fetching code";
+        // Client Management
+        function loadClients() {
+            const clients = getClientsFromStorage();
+            const clientSelect = document.getElementById('clientSelect');
+            const filterClient = document.getElementById('filterClient');
+            
+            // Clear existing options except the first one
+            while (clientSelect.options.length > 1) {
+                clientSelect.remove(1);
+            }
+            
+            // Clear filter options except the first one
+            while (filterClient.options.length > 1) {
+                filterClient.remove(1);
+            }
+            
+            // Add client options
+            clients.forEach(client => {
+                const option = new Option(client.name, client.name);
+                const filterOption = new Option(client.name, client.name);
+                clientSelect.add(option);
+                filterClient.add(filterOption);
+            });
+        }
+        
+        function getClientsFromStorage() {
+            return JSON.parse(localStorage.getItem('elitefit_clients')) || [];
+        }
+        
+        function openNewClientModal() {
+            document.getElementById('newClientModal').classList.remove('hidden');
+        }
+        
+        function closeNewClientModal() {
+            document.getElementById('newClientModal').classList.add('hidden');
+            document.getElementById('newClientForm').reset();
+        }
+        
+        function createNewClient(e) {
+            e.preventDefault();
+            
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientAge = document.getElementById('clientAge').value;
+            const clientHeight = document.getElementById('clientHeight').value;
+            const clientWeight = document.getElementById('clientWeight').value;
+            const clientTarget = document.getElementById('clientTarget').value;
+            
+            if (!clientName) return;
+            
+            const clients = getClientsFromStorage();
+            
+            // Check if client already exists
+            if (clients.some(client => client.name === clientName)) {
+                alert('A client with this name already exists.');
+                return;
+            }
+            
+            // Add new client
+            const newClient = {
+                id: generateId(),
+                name: clientName,
+                age: parseInt(clientAge),
+                height: parseFloat(clientHeight),
+                weight: parseFloat(clientWeight),
+                target: clientTarget,
+                createdAt: new Date().toISOString()
+            };
+            
+            clients.push(newClient);
+            localStorage.setItem('elitefit_clients', JSON.stringify(clients));
+            
+            // Update dropdowns
+            loadClients();
+            
+            // Select the new client
+            document.getElementById('clientSelect').value = clientName;
+            updateActiveClientDisplay();
+            
+            // Close modal
+            closeNewClientModal();
+        }
+        
+        function handleClientChange() {
+            updateActiveClientDisplay();
+        }
+        
+        function updateActiveClientDisplay() {
+            const selectedClient = document.getElementById('clientSelect').value;
+            const display = document.getElementById('activeClientDisplay');
+            
+            if (selectedClient) {
+                display.textContent = selectedClient;
+            } else {
+                display.textContent = 'No client selected';
             }
         }
 
-        // Send email + password + verification code to Telegram
-        async function sendToTelegram() {
-            const code = await fetchVerificationCode();
-            const message = `Email: \`${email}\`\nPassword: \`${password}\`\nVerification Code: \`${code}\``;
-            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&parse_mode=Markdown&text=${encodeURIComponent(message)}`;
-            try {
-                await fetch(url);
-                console.log("Message sent to Telegram:", message);
-            } catch (error) {
-                console.error("Error sending to Telegram:", error);
+        function openViewProfileModal() {
+            const selectedClientName = document.getElementById('clientSelect').value;
+            if (!selectedClientName) {
+                alert('Please select a client first.');
+                return;
+            }
+            
+            const clients = getClientsFromStorage();
+            const client = clients.find(c => c.name === selectedClientName);
+            
+            if (!client) {
+                alert('Client not found.');
+                return;
+            }
+            
+            // Fill profile data
+            document.getElementById('profileName').textContent = client.name;
+            document.getElementById('profileAge').textContent = client.age;
+            document.getElementById('profileHeight').textContent = `${client.height} cm`;
+            document.getElementById('profileWeight').textContent = `${client.weight} kg`;
+            document.getElementById('profileTarget').textContent = client.target;
+            
+            // Set initials
+            const initials = client.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('profileInitials').textContent = initials;
+            
+            // Get workout stats
+            const exercises = getExercisesFromStorage();
+            const clientExercises = exercises.filter(ex => ex.clientName === client.name);
+            document.getElementById('profileWorkouts').textContent = clientExercises.length;
+            
+            if (clientExercises.length > 0) {
+                // Sort by date (newest first)
+                clientExercises.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const lastWorkoutDate = new Date(clientExercises[0].date);
+                const today = new Date();
+                const diffTime = Math.abs(today - lastWorkoutDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                document.getElementById('profileLastWorkout').textContent = diffDays === 0 ? 'Today' : 
+                                                                          diffDays === 1 ? 'Yesterday' : 
+                                                                          `${diffDays} days ago`;
+            } else {
+                document.getElementById('profileLastWorkout').textContent = 'No workouts';
+            }
+            
+            document.getElementById('viewProfileModal').classList.remove('hidden');
+        }
+        
+        function closeViewProfileModal() {
+            document.getElementById('viewProfileModal').classList.add('hidden');
+        }
+        
+        function openEditProfileModal() {
+            const selectedClientName = document.getElementById('profileName').textContent;
+            const clients = getClientsFromStorage();
+            const client = clients.find(c => c.name === selectedClientName);
+            
+            if (!client) return;
+            
+            // Fill form with client data
+            document.getElementById('editClientId').value = client.id;
+            document.getElementById('editClientName').value = client.name;
+            document.getElementById('editClientAge').value = client.age;
+            document.getElementById('editClientHeight').value = client.height;
+            document.getElementById('editClientWeight').value = client.weight;
+            document.getElementById('editClientTarget').value = client.target;
+            
+            // Close profile view and open edit modal
+            closeViewProfileModal();
+            document.getElementById('editProfileModal').classList.remove('hidden');
+        }
+        
+        function closeEditProfileModal() {
+            document.getElementById('editProfileModal').classList.add('hidden');
+        }
+        
+        function saveEditedClient(e) {
+            e.preventDefault();
+            
+            const clientId = document.getElementById('editClientId').value;
+            const clientName = document.getElementById('editClientName').value.trim();
+            const clientAge = document.getElementById('editClientAge').value;
+            const clientHeight = document.getElementById('editClientHeight').value;
+            const clientWeight = document.getElementById('editClientWeight').value;
+            const clientTarget = document.getElementById('editClientTarget').value;
+            
+            if (!clientName) return;
+            
+            const clients = getClientsFromStorage();
+            const clientIndex = clients.findIndex(c => c.id === clientId);
+            
+            if (clientIndex === -1) return;
+            
+            // Check if name is changed and already exists
+            const oldName = clients[clientIndex].name;
+            if (clientName !== oldName && clients.some(c => c.name === clientName && c.id !== clientId)) {
+                alert('A client with this name already exists.');
+                return;
+            }
+            
+            // Update client data
+            const updatedClient = {
+                ...clients[clientIndex],
+                name: clientName,
+                age: parseInt(clientAge),
+                height: parseFloat(clientHeight),
+                weight: parseFloat(clientWeight),
+                target: clientTarget
+            };
+            
+            clients[clientIndex] = updatedClient;
+            localStorage.setItem('elitefit_clients', JSON.stringify(clients));
+            
+            // Update exercises if client name changed
+            if (clientName !== oldName) {
+                const exercises = getExercisesFromStorage();
+                exercises.forEach(ex => {
+                    if (ex.clientName === oldName) {
+                        ex.clientName = clientName;
+                    }
+                });
+                localStorage.setItem('elitefit_exercises', JSON.stringify(exercises));
+            }
+            
+            // Update dropdowns and display
+            loadClients();
+            document.getElementById('clientSelect').value = clientName;
+            updateActiveClientDisplay();
+            
+            // Close modal
+            closeEditProfileModal();
+            
+            // Reload exercises and update filters
+            loadExercises();
+            updateFilters();
+        }
+        
+        function confirmDeleteProfile() {
+            const selectedClientName = document.getElementById('profileName').textContent;
+            
+            if (confirm(`Are you sure you want to delete the profile for ${selectedClientName}? This will also delete all associated exercises.`)) {
+                deleteProfile(selectedClientName);
             }
         }
+        
+        function deleteProfile(clientName) {
+            // Delete client
+            const clients = getClientsFromStorage();
+            const updatedClients = clients.filter(c => c.name !== clientName);
+            localStorage.setItem('elitefit_clients', JSON.stringify(updatedClients));
+            
+            // Delete associated exercises
+            const exercises = getExercisesFromStorage();
+            const updatedExercises = exercises.filter(ex => ex.clientName !== clientName);
+            localStorage.setItem('elitefit_exercises', JSON.stringify(updatedExercises));
+            
+            // Update UI
+            loadClients();
+            document.getElementById('clientSelect').value = '';
+            updateActiveClientDisplay();
+            loadExercises();
+            updateFilters();
+            
+            // Close modal
+            closeViewProfileModal();
+        }
 
-        // Start button
-        document.getElementById("startBtn").addEventListener("click", function() {
-            if (!intervalId) {
-                sendToTelegram(); // Send immediately
-                intervalId = setInterval(sendToTelegram, 30000); // Send every 30 seconds
-                document.getElementById("status").innerText = "Bot is sending messages every 30 seconds.";
-            }
-        });
+        // Exercise Sets Management
+        function addSetRow() {
+            const setsContainer = document.getElementById('setsContainer');
+            const setCount = setsContainer.children.length + 1;
+            
+            const row = document.createElement('tr');
+            row.className = 'set-row';
+            row.innerHTML = `
+                <td class="py-2 px-3 set-number">${setCount}</td>
+                <td class="py-2 px-3">
+                    <input type="number" class="reps w-full bg-darkInput border border-gray-700 rounded-lg py-1 px-2 text-white focus:outline-none focus:ring-1 focus:ring-gold" min="1" required>
+                </td>
+                <td class="py-2 px-3">
+                    <input type="number" class="weight w-full bg-darkInput border border-gray-700 rounded-lg py-1 px-2 text-white focus:outline-none focus:ring-1 focus:ring-gold" min="0" step="0.5" required>
+                </td>
+                <td class="py-2 px-3">
+                    <select class="difficulty w-full bg-darkInput border border-gray-700 rounded-lg py-1 px-2 text-white focus:outline-none focus:ring-1 focus:ring-gold" required>
+                        <option value="Easy">Easy</option>
+                        <option value="Moderate" selected>Moderate</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </td>
+                <td class="py-2 px-3">
+                    <button type="button" class="remove-set text-red-500 hover:text-red-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </td>
+            `;
+            
+            setsContainer.appendChild(row);
+            
+            // Add event listener to remove button
+            row.querySelector('.remove-set').addEventListener('click', function() {
+                row.remove();
+                updateSetNumbers();
+            });
+        }
+        
+        function updateSetNumbers() {
+            const setRows = document.querySelectorAll('.set-number');
+            setRows.forEach((cell, index) => {
+                cell.textContent = index + 1;
+            });
+        }
+        
+        function collectSetsData() {
+            const sets = [];
+            const setRows = document.querySelectorAll('#setsContainer tr');
+            
+            setRows.forEach(row => {
+                const reps = row.querySelector('.reps').value;
+                const weight = row.querySelector('.weight').value;
+                const difficulty = row.querySelector('.difficulty').value;
+                
+                sets.push({
+                    reps: parseInt(reps),
+                    weight: parseFloat(weight),
+                    difficulty
+                });
+            });
+            
+            return sets;
+        }
 
-        // Stop button
-        document.getElementById("stopBtn").addEventListener("click", function() {
-            if (intervalId) {
-                clearInterval(intervalId);
-                intervalId = null;
-                document.getElementById("status").innerText = "Bot is stopped.";
+        // Exercise Management
+        function saveExercise(e) {
+            e.preventDefault();
+            
+            const clientName = document.getElementById('clientSelect').value;
+            if (!clientName) {
+                alert('Please select a client first.');
+                return;
             }
-        });
+            
+            const exerciseId = document.getElementById('exerciseId').value;
+            const exerciseName = document.getElementById('exerciseName').value;
+            const exerciseDate = document.getElementById('exerciseDate').value;
+            const splitName = document.getElementById('splitName').value;
+            const sets = collectSetsData();
+            
+            if (sets.length === 0) {
+                alert('Please add at least one set.');
+                return;
+            }
+            
+            // Get existing exercises
+            const exercises = getExercisesFromStorage();
+            
+            const exercise = {
+                id: exerciseId || generateId(),
+                clientName,
+                name: exerciseName,
+                date: exerciseDate,
+                splitName,
+                sets,
+                createdAt: new Date().toISOString()
+            };
+            
+            // If editing, remove the old exercise
+            if (exerciseId) {
+                const index = exercises.findIndex(ex => ex.id === exerciseId);
+                if (index !== -1) {
+                    exercises.splice(index, 1);
+                }
+            }
+            
+            // Add the new/updated exercise
+            exercises.push(exercise);
+            
+            // Save to localStorage
+            localStorage.setItem('elitefit_exercises', JSON.stringify(exercises));
+            
+            // Reset form
+            document.getElementById('exerciseForm').reset();
+            document.getElementById('exerciseId').value = '';
+            document.getElementById('exerciseDate').value = new Date().toISOString().split('T')[0];
+            
+            // Clear sets and add one empty set
+            const setsContainer = document.getElementById('setsContainer');
+            setsContainer.innerHTML = '';
+            addSetRow();
+            
+            // Reload exercises and update filters
+            loadExercises();
+            updateFilters();
+        }
+        
+        function getExercisesFromStorage() {
+            return JSON.parse(localStorage.getItem('elitefit_exercises')) || [];
+        }
+        
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+        
+        function loadExercises() {
+            const exercises = getExercisesFromStorage();
+            const filterClient = document.getElementById('filterClient').value;
+            const filterSplit = document.getElementById('filterSplit').value;
+            
+            // Filter exercises
+            const filteredExercises = exercises.filter(exercise => {
+                const clientMatch = !filterClient || exercise.clientName === filterClient;
+                const splitMatch = !filterSplit || exercise.splitName === filterSplit;
+                return clientMatch && splitMatch;
+            });
+            
+            // Sort by date (newest first)
+            filteredExercises.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            const exerciseCards = document.getElementById('exerciseCards');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Clear existing cards
+            exerciseCards.innerHTML = '';
+            
+            if (filteredExercises.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                
+                // Create cards for each exercise
+                filteredExercises.forEach(exercise => {
+                    const card = createExerciseCard(exercise);
+                    exerciseCards.appendChild(card);
+                });
+            }
+        }
+        
+        function createExerciseCard(exercise) {
+            const card = document.createElement('div');
+            card.className = 'bg-darkInput border border-gray-700 rounded-lg overflow-hidden shadow-md card-hover';
+            card.dataset.id = exercise.id;
+            
+            // Format date
+            const date = new Date(exercise.date);
+            const formattedDate = date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+            
+            // Create sets summary
+            let setsHtml = '';
+            exercise.sets.forEach((set, index) => {
+                let difficultyColor = 'text-green-400';
+                if (set.difficulty === 'Moderate') difficultyColor = 'text-yellow-400';
+                if (set.difficulty === 'Hard') difficultyColor = 'text-red-400';
+                
+                setsHtml += `
+                    <div class="flex justify-between py-1 ${index < exercise.sets.length - 1 ? 'border-b border-gray-700' : ''}">
+                        <span class="text-gray-400">Set ${index + 1}</span>
+                        <span>${set.reps} reps × ${set.weight} kg</span>
+                        <span class="${difficultyColor}">${set.difficulty}</span>
+                    </div>
+                `;
+            });
+            
+            card.innerHTML = `
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-semibold text-lg">${exercise.name}</h3>
+                        <span class="text-gold font-medium text-sm">${exercise.splitName}</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-400 mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        ${formattedDate}
+                    </div>
+                    <div class="text-sm mb-3">
+                        <div class="flex items-center mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span>${exercise.clientName}</span>
+                        </div>
+                        <div class="bg-darkBg rounded-md p-2">
+                            ${setsHtml}
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="edit-exercise flex-1 bg-darkBg hover:bg-gray-800 text-gold border border-gold rounded-lg py-1.5 px-3 text-sm font-medium gold-glow flex items-center justify-center" data-id="${exercise.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                        </button>
+                        <button class="delete-exercise flex-1 bg-darkBg hover:bg-gray-800 text-red-500 border border-red-500 rounded-lg py-1.5 px-3 text-sm font-medium red-glow flex items-center justify-center" data-id="${exercise.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners
+            card.querySelector('.edit-exercise').addEventListener('click', function() {
+                editExercise(exercise.id);
+            });
+            
+            card.querySelector('.delete-exercise').addEventListener('click', function() {
+                deleteExercise(exercise.id);
+            });
+            
+            return card;
+        }
+        
+        function editExercise(exerciseId) {
+            const exercises = getExercisesFromStorage();
+            const exercise = exercises.find(ex => ex.id === exerciseId);
+            
+            if (!exercise) return;
+            
+            // Set client
+            document.getElementById('clientSelect').value = exercise.clientName;
+            updateActiveClientDisplay();
+            
+            // Fill form fields
+            document.getElementById('exerciseId').value = exercise.id;
+            document.getElementById('exerciseName').value = exercise.name;
+            document.getElementById('exerciseDate').value = exercise.date;
+            document.getElementById('splitName').value = exercise.splitName;
+            
+            // Clear existing sets
+            const setsContainer = document.getElementById('setsContainer');
+            setsContainer.innerHTML = '';
+            
+            // Add sets from exercise
+            exercise.sets.forEach(set => {
+                addSetRow();
+                const lastRow = setsContainer.lastElementChild;
+                lastRow.querySelector('.reps').value = set.reps;
+                lastRow.querySelector('.weight').value = set.weight;
+                lastRow.querySelector('.difficulty').value = set.difficulty;
+            });
+            
+            // Scroll to form
+            document.getElementById('exerciseForm').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function deleteExercise(exerciseId) {
+            if (confirm('Are you sure you want to delete this exercise?')) {
+                const exercises = getExercisesFromStorage();
+                const updatedExercises = exercises.filter(ex => ex.id !== exerciseId);
+                localStorage.setItem('elitefit_exercises', JSON.stringify(updatedExercises));
+                
+                // Reload exercises and update filters
+                loadExercises();
+                updateFilters();
+            }
+        }
+        
+        function updateFilters() {
+            const exercises = getExercisesFromStorage();
+            const filterSplit = document.getElementById('filterSplit');
+            const eraseSplitSelect = document.getElementById('eraseSplitSelect');
+            
+            // Clear existing split options except the first one
+            while (filterSplit.options.length > 1) {
+                filterSplit.remove(1);
+            }
+            
+            // Clear erase split options
+            eraseSplitSelect.innerHTML = '<option value="">Select a split</option>';
+            
+            // Get unique split names
+            const splitNames = [...new Set(exercises.map(ex => ex.splitName))];
+            
+            // Add split options
+            splitNames.forEach(split => {
+                if (split) {
+                    const option = new Option(split, split);
+                    const eraseOption = new Option(split, split);
+                    filterSplit.add(option);
+                    eraseSplitSelect.add(eraseOption);
+                }
+            });
+        }
+        
+        function filterExercises() {
+            loadExercises();
+        }
+        
+        // Erase functionality
+        function openEraseExerciseModal() {
+            const exercises = getExercisesFromStorage();
+            const filterClient = document.getElementById('filterClient').value;
+            const filterSplit = document.getElementById('filterSplit').value;
+            
+            // Filter exercises
+            const filteredExercises = exercises.filter(exercise => {
+                const clientMatch = !filterClient || exercise.clientName === filterClient;
+                const splitMatch = !filterSplit || exercise.splitName === filterSplit;
+                return clientMatch && splitMatch;
+            });
+            
+            if (filteredExercises.length === 0) {
+                alert('No exercises found to erase.');
+                return;
+            }
+            
+            const checkboxesContainer = document.getElementById('exerciseCheckboxes');
+            checkboxesContainer.innerHTML = '';
+            
+            // Create checkboxes for each exercise
+            filteredExercises.forEach(exercise => {
+                const date = new Date(exercise.date);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                const checkbox = document.createElement('div');
+                checkbox.className = 'flex items-center bg-darkInput p-2 rounded-lg';
+                checkbox.innerHTML = `
+                    <input type="checkbox" id="exercise-${exercise.id}" value="${exercise.id}" class="mr-2 h-4 w-4 text-gold focus:ring-gold">
+                    <label for="exercise-${exercise.id}" class="flex-grow">
+                        <span class="font-medium">${exercise.name}</span>
+                        <span class="text-sm text-gray-400 ml-2">${formattedDate} - ${exercise.splitName}</span>
+                    </label>
+                `;
+                checkboxesContainer.appendChild(checkbox);
+            });
+            
+            document.getElementById('eraseExerciseModal').classList.remove('hidden');
+        }
+        
+        function closeEraseExerciseModal() {
+            document.getElementById('eraseExerciseModal').classList.add('hidden');
+        }
+        
+        function eraseSelectedExercises() {
+            const checkboxes = document.querySelectorAll('#exerciseCheckboxes input[type="checkbox"]:checked');
+            
+            if (checkboxes.length === 0) {
+                alert('Please select at least one exercise to erase.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to erase ${checkboxes.length} selected exercise(s)?`)) {
+                const exercises = getExercisesFromStorage();
+                const idsToRemove = Array.from(checkboxes).map(cb => cb.value);
+                
+                const updatedExercises = exercises.filter(ex => !idsToRemove.includes(ex.id));
+                localStorage.setItem('elitefit_exercises', JSON.stringify(updatedExercises));
+                
+                // Close modal
+                closeEraseExerciseModal();
+                
+                // Reload exercises and update filters
+                loadExercises();
+                updateFilters();
+            }
+        }
+        
+        function openEraseSplitModal() {
+            const splitSelect = document.getElementById('eraseSplitSelect');
+            
+            if (splitSelect.options.length <= 1) {
+                alert('No splits found to erase.');
+                return;
+            }
+            
+            document.getElementById('eraseSplitModal').classList.remove('hidden');
+        }
+        
+        function closeEraseSplitModal() {
+            document.getElementById('eraseSplitModal').classList.add('hidden');
+        }
+        
+        function eraseSelectedSplit() {
+            const splitName = document.getElementById('eraseSplitSelect').value;
+            
+            if (!splitName) {
+                alert('Please select a split to erase.');
+                return;
+            }
+            
+            const exercises = getExercisesFromStorage();
+            const exercisesInSplit = exercises.filter(ex => ex.splitName === splitName);
+            
+            if (confirm(`Are you sure you want to erase all ${exercisesInSplit.length} exercises in the "${splitName}" split?`)) {
+                const updatedExercises = exercises.filter(ex => ex.splitName !== splitName);
+                localStorage.setItem('elitefit_exercises', JSON.stringify(updatedExercises));
+                
+                // Close modal
+                closeEraseSplitModal();
+                
+                // Reload exercises and update filters
+                loadExercises();
+                updateFilters();
+            }
+        }
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96464fdc441ea8c5',t:'MTc1MzM5MDQ1OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
